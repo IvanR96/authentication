@@ -55,6 +55,24 @@ app.post("/register", async (req, res) => {
 app.post("/login", async (req, res) => {
   let email = req.body.username;
   let password = req.body.password;
+
+  try{
+    const result = await db.query("SELECT * FROM users WHERE email = $1",[email]);
+
+    if (result.rows.length > 0){
+      const user = result.rows[0];
+      const storedPassword = user.password;
+
+      if (password === storedPassword){
+        res.render("secrets.ejs");
+      }
+      else{
+        res.send("User not found");
+      }
+    }
+  } catch(err){
+    console.log(err);
+  }
   
 });
 
